@@ -24,11 +24,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/czkendra/uplinkswitch-ai-sdk-provider.git"
+    "url": "git+https://github.com/uplinkswitch/uplinkswitch-ai-sdk-provider.git"
   },
   "homepage": "https://uplinkswitch.com",
   "bugs": {
-    "url": "https://github.com/czkendra/uplinkswitch-ai-sdk-provider/issues"
+    "url": "https://github.com/uplinkswitch/uplinkswitch-ai-sdk-provider/issues"
   },
   "keywords": [
     "uplinkswitch",
