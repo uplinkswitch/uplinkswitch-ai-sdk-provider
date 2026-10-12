@@ -1,0 +1,31 @@
+# Publishes the package to npm when a version tag is pushed (v0.1.0 and so on). Needs one repository secret,
+# NPM_TOKEN: a granular access token from npmjs.com with publish rights on @uplinkswitch. The version in
+# package.json must match the tag.
+name: Publish to npm
+on:
+  push:
+    tags:
+      - "v*"
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Check the tag matches package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          test "$tag" = "$version" || { echo "tag v$tag does not match package.json version $version"; exit 1; }
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
