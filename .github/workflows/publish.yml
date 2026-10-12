@@ -1,6 +1,7 @@
-# Publishes the package to npm when a version tag is pushed (v0.1.0 and so on). Needs one repository secret,
-# NPM_TOKEN: a granular access token from npmjs.com with publish rights on @uplinkswitch. The version in
-# package.json must match the tag.
+# Publishes the package to npm when a version tag is pushed (v0.1.0 and so on). No secret: npm's trusted
+# publishing (OIDC) trusts this repository and this workflow file, configured once on npmjs.com for the
+# package, so the job needs only `id-token: write` and npm 11.5.1 or later. Provenance is attached
+# automatically. The version in package.json must match the tag.
 name: Publish to npm
 on:
   push:
@@ -18,6 +19,7 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npm run build
       - run: npm test
@@ -26,6 +28,4 @@ jobs:
           tag="${GITHUB_REF_NAME#v}"
           version="$(node -p "require('./package.json').version")"
           test "$tag" = "$version" || { echo "tag v$tag does not match package.json version $version"; exit 1; }
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --access public
